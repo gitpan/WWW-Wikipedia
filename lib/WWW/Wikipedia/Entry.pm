@@ -2,6 +2,7 @@ package WWW::Wikipedia::Entry;
 
 use strict;
 use warnings;
+use Text::Autoformat;
 
 =head1 NAME
 
@@ -43,8 +44,8 @@ sub new {
         headings    => [],
         }, ref($class) || $class;
     $self->_parse();
-    $self->{fulltext} =~ s/^\n//mg; ## remove empty lines
-    $self->{text} =~ s/\n//g; ## remove all newlines
+    $self->{fulltext} = _pretty( $self->{fulltext} );
+    $self->{text} = _pretty( $self->{text} );
     return( $self );
 }
 
@@ -183,6 +184,15 @@ sub _parse {
             $self->{fulltext} .= substr( $raw, $self->{cursor}, 1 );
         }
     }
+}
+
+sub _pretty {
+    my $text = shift;
+    return autoformat( $text, {
+        left        => 0,
+        right       => 80,
+        justify     => 'left',
+        all         => 1 } );
 }
 
 =head1 AUTHORS

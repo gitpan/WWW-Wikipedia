@@ -10,5 +10,6 @@ WriteMakefile(
 			    {
 				'LWP::UserAgent'    => 0,
                                 'CGI'               => 0,
+                                'Text::Autoformat'  => 0,
 			    },
 );

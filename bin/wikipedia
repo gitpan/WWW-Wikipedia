@@ -26,7 +26,7 @@ and don't want to fire up a web browser to see what something is.
 
 use strict;
 use WWW::Wikipedia;
-use Text::Wrap;
+use Text::Autoformat;
 use Pod::Usage;
 
 my $term = shift;
@@ -38,7 +38,7 @@ my $entry = $wiki->search( $term );
 eval( 'use IO::Page' );
 if ( $entry ) { 
     my $text = $entry->text();
-    if ( $text ) { print wrap( '', '', $text ); }
+    if ( $text ) { print $text; }
     else {
         print "Specific entry not found, see also:\n";
         foreach ( $entry->related() ) { print " - $_\n"; }

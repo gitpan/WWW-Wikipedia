@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+1.2     Wed Sep 01 08:35:42 2004
+        - removed newline stripping (thanks Offer Kaye)
+        - bin/wikipedia uses Text::Autoformat
+
 1.1     Thu Aug 19 20:11:10 2004
         - fixed t/15.entry.t to hopefull pass on multiple platforms no 
           matter what OS the distribution was created on.
