@@ -7,7 +7,7 @@ use Carp qw( croak );
 use CGI qw( escape );
 use HTML::Parser;
 
-our $VERSION = .5;
+our $VERSION = .6;
 
 use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org/w/wiki.phtml';
 
@@ -23,9 +23,9 @@ WWW::Wikipedia - Automated interface to the Wikipedia
   ## search for 'perl' 
   my $result = $wiki->search( 'perl' );
 
-  ## if we got some content print it out
+  ## if the entry has some text print it out
   if ( $result->text() ) { 
-      print $result->content();
+      print $result->text();
   }
 
   ## list any related items we can look up 
@@ -112,7 +112,7 @@ sub search {
 
 =head2 text()
 
-After you have performed a search you use text() to retrieve the content of 
+After you have performed a search you use text() to retrieve the text of 
 the entry. If your search failed you will be returned C<undef>.
 
     $entry = $wiki->search( 'Perl' );
@@ -168,7 +168,7 @@ no realted items you get back an empty list.
 
 =over 4
 
-=item * Clean up results of content()
+=item * Clean up results
 
 =item * Support for other language Wikipedias
 

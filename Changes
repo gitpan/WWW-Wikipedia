@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+0.6     Tue Apr 06 10:02:34 2004
+        - fixed documentation bug (thanks Thomas Galley)
+
 0.5     Fri Feb 13 10:32:01 2004
         - wikipedia cmd line tool uses IO::Page if it can.
 
