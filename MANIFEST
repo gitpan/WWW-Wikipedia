@@ -1,0 +1,9 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+lib/WWW/Wikipedia.pm
+t/10.load.t
+t/20.search.t
+t/30.related.t
+t/40.empty.t
