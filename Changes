@@ -1,5 +1,11 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+0.9     Wed Aug 04 23:19:12 2004
+        - new WWW::Wikipedia::Entry, backwards incompatible changes to
+          interface.
+        - t/15.entry.t test the new entry class.
+        - WWW::Wikipedia is now a subclass of LWP::UserAgent.
+
 0.6     Tue Apr 06 10:02:34 2004
         - fixed documentation bug (thanks Thomas Galley)
 

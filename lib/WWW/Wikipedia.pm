@@ -2,14 +2,15 @@ package WWW::Wikipedia;
 
 use strict;
 use warnings;
-use LWP::UserAgent;
 use Carp qw( croak );
 use CGI qw( escape );
-use HTML::Parser;
+use WWW::Wikipedia::Entry;
 
-our $VERSION = .6;
+use base qw( LWP::UserAgent );
 
-use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org/w/wiki.phtml';
+our $VERSION = .9;
+
+use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org';
 
 =head1 NAME
 
@@ -43,52 +44,38 @@ available via the Wikipedia for that entry.
 
 =head2 new()
 
-The constructor, which ordinarily takes no arguments.
+The constructor, which takes no arguments.
 
     my $wiki = WWW::Wikipedia->new();
 
-WWW::Wikipedia uses LWP::UserAgent to to talk to the Wikipedia. If you would
+WWW::Wikipedia is a subclass of LWP::UserAgent. If you would
 like to have more control over the user agent (control timeouts, proxies ...) 
-you can pass in a user agent for WWW::Wikipedia to use.
+you have full access.
 
-    my $ua = LWP::UserAgent->new();
-    $ua->timeout( 2 );
-
-    my $wiki = WWW::Wikipedia->new( ua => $ua );
-
+    ## set HTTP request timeout
+    my $wiki = WWW::Wikipedia->new();
+    $wiki->timeout( 2 );
 
 =cut
 
 sub new { 
     my ( $class, %opts ) = @_;
 
-    ## use the user agent they passed in if appropriate
-    my $ua;
-    if ( exists( $opts{ ua } ) and ref( $opts{ ua } ) eq 'LWP::UserAgent' ) {
-	$ua = $opts{ ua };
-    } 
-    
-    ## otherwise create our own
-    else { 
-	$ua = LWP::UserAgent->new();
-	$ua->agent( 'WWW::Wikipedia' );
-    }
+    my $self =  LWP::UserAgent->new();
+    $self->agent( 'WWW::Wikipedia' );
+    $self->{ src } = WIKIPEDIA_ENGLISH;
 
-    return(  
-	bless { 
-	    ua	    => $ua,
-	    src	    => WIKIPEDIA_ENGLISH
-	}, ref($class) || $class
-    );
-
+    return bless $self, ref($class) || $class
 }
 
 =head2 search() 
 
 Which performs the search and returns a WWW::Wikipedia::Entry object which 
-you can query further.
+you can query further. See WWW::Wikipedia::Entry docs for more info.
 
     $entry = $wiki->search( 'Perl' );
+    print $entry->text();
+
 
 =cut 
 
@@ -97,10 +84,9 @@ sub search {
 
     croak( "search() requires you pass in a string" ) if ! defined( $string );
     $string = escape( $string );
-    my $ua = $self->{ ua };
     my $src = $self->{ src };
 
-    my $response = $ua->get( "$src?search=$string&go=Go" );
+    my $response = $self->get( "$src/wiki/$string?action=raw" );
     if ( $response->is_success() ) {
 	my $entry = WWW::Wikipedia::Entry->new( $response->content(), $src );
 	return( $entry );
@@ -109,60 +95,6 @@ sub search {
     }
 
 }
-
-=head2 text()
-
-After you have performed a search you use text() to retrieve the text of 
-the entry. If your search failed you will be returned C<undef>.
-
-    $entry = $wiki->search( 'Perl' );
-    print "Perl is: ",$entry->text();
-
-=head2 related()
-
-related() returns a list of wiki items that are related to the entry in 
-question. You can use these terms as possible new searches. If there are
-no realted items you get back an empty list.
-
-    $entry = $wiki->search( 'Perl' );
-    foreach ( $wiki->related() ) { 
-	print "$_\n";
-    }
-
-    ## which prints out this:
-
-    1987
-    2002
-    Acronym
-    Artistic License
-    Awk
-    Backronym
-    C programming language
-    CPAN
-    Common Gateway Interface
-    Free software movement
-    Functional programming
-    GPL
-    Java programming language
-    Larry Wall
-    Microsoft Windows
-    Obfuscated code
-    Object Oriented Programming
-    Operating system
-    Parrot virtual machine
-    Poetry
-    Procedural programming
-    Programming language
-    Regular expression
-    Scripting programming languages
-    Sed
-    Sh
-    Syntax
-    Unicode
-    Unix
-    Unix-like
-    Virtual machine
-    Wikipedia
 
 =head1 TODO
 
@@ -180,8 +112,6 @@ no realted items you get back an empty list.
 
 =over 4
 
-=item * HTML::Parser
-
 =item * LWP::UserAgent
 
 =back
@@ -198,91 +128,5 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
 
 =cut
-
-package WWW::Wikipedia::Entry;
-
-use HTML::Parser;
-
-sub new {
-    my ( $class, $html, $src ) = @_;
-    if ( $html =~ /no page with this exact title exists/i ) { 
-	return( undef ); 
-    }
-    return( bless { html => $html, src => $src }, ref($class) || $class );
-}
-
-sub text {
-    my $self = shift;
-    $self->_parse if !exists( $self->{ text } );
-    return $self->{ text };
-}
-
-sub related {
-    my $self = shift;
-    if ( ! exists( $self->{ related_entries } ) ) {
-	$self->_parse if ! exists( $self->{ related_urls } );
-	my ( $src ) = ( $self->{ src } =~ m[(http://.*?)/] );
-	$src = "$src/wiki/";
-	my %found = ();
-	foreach ( @{ $self->{ related_urls } } ) {
-	    if ( $_ =~ /$src(.*)/ ) {
-		my $entry = $1;
-		$entry =~ s/_/ /g;
-		$found{ $entry } = 1;
-	    }
-	}
-	$self->{ related_entries } = [ sort keys(%found) ];
-    }
-    return @{ $self->{ related_entries } };
-}
-
-sub _parse {
-    my $self = shift;
-    my $parser = HTML::Parser->new();
-    $parser->unbroken_text();
-    $parser->handler( start => \&_start, "self, tagname, attr, text" );
-    $parser->handler( end => \&_end, "self, tagname, text" );
-    $parser->handler( text => \&_text, "self, dtext, is_cdata" );
-    $parser->{ WIKI_FOUND_ARTICLE } = 0;
-    $parser->{ WIKI_DIVCOUNT } = 0;
-    $parser->{ WIKI_INSIDE_RELATED } = 0;
-    $parser->{ text } = '';
-    $parser->{ related_urls } = [];
-    $parser->parse( $self->{ html } ); 
-    $parser->{ text } =~ s/(\r\n)+/$1/gm;
-    $parser->{ text } =~ s/\n+/\n/gm;
-    $self->{ text } = $parser->{ text };
-    $self->{ related_urls } = $parser->{ related_urls };
-}
-
-sub _start {
-    my ( $self, $tagname, $attr, $attrseq, $text ) = @_;
-    if ( $tagname eq 'div' ) { 
-	$self->{ WIKI_DIVCOUNT }++;
-	if ( exists($attr->{ id }) and $attr->{ id } eq 'article' ) { 
-	    $self->{ WIKI_FOUND_ARTICLE } = $self->{ WIKI_DIVCOUNT };
-	}
-    } elsif ( $tagname eq 'a' and $self->{ WIKI_FOUND_ARTICLE } ) {
-	push( @{ $self->{ related_urls } }, $attr->{ href } );
-    }
-}
-
-sub _end {
-    my ( $self, $tagname, $text ) = @_;
-    return() if $tagname ne 'div';
-    if ( $self->{ WIKI_FOUND_ARTICLE } 
-	and $self->{ WIKI_FOUND_ARTICLE } eq $self->{ WIKI_DIVCOUNT } ) {
-	$self->{ WIKI_FOUND_ARTICLE } = 0;
-    }
-    $self->{ WIKI_INSIDE_RELATED } = 0;
-    $self->{ WIKI_DIVCOUNT }--;
-}
-
-sub _text {
-    my ( $self, $text, $is_cdata ) = @_;
-    if ( $self->{ WIKI_FOUND_ARTICLE } ) {
-	$self->{ text } .= $text; 
-    }
-}
 
 1;

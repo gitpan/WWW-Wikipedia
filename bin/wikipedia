@@ -36,6 +36,13 @@ my $entry = $wiki->search( $term );
 
 ## use a pager if we can
 eval( 'use IO::Page' );
-if ( $entry ) { print wrap( '', '', $entry->text ); }
+if ( $entry ) { 
+    my $text = $entry->text();
+    if ( $text ) { print wrap( '', '', $text ); }
+    else {
+        print "Specific entry not found, see also:\n";
+        foreach ( $entry->related() ) { print " - $_\n"; }
+    }
+}
 else { print qq("$term" not found in wikipedia\n) }
 

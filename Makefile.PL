@@ -8,7 +8,7 @@ WriteMakefile(
     EXE_FILES           => [ qw( bin/wikipedia ) ],
     PREREQ_PM		=> 
 			    {
-				'HTML::Parser'	    => 1,
-				'LWP::UserAgent'    => 1
+				'LWP::UserAgent'    => 0,
+                                'CGI'               => 0,
 			    },
 );

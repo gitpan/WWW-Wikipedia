@@ -1,16 +1,11 @@
-use Test::More tests => 3;
+use Test::More tests => 2;
 
 use strict;
 use warnings;
-use WWW::Wikipedia;
-use LWP::UserAgent;
 
-my $ua = LWP::UserAgent->new();
-isa_ok( $ua, 'LWP::UserAgent' );
-$ua->agent( 'Test' );
+use_ok( 'WWW::Wikipedia' );
 
-my $wiki = WWW::Wikipedia->new ( ua => $ua );
-isa_ok( $wiki->{ ua }, 'LWP::UserAgent' );
-is( $wiki->{ ua }->agent(), 'Test', 'custom user agent' );
+my $wiki = WWW::Wikipedia->new();
+isa_ok( $wiki, 'LWP::UserAgent' );
 
 
