@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+0.3	Tue Apr 01 08:57:00 2003
+	- added ability to specify useragent in constructor 
+	  thanks Lin Yung-Chung.
+
 0.2	Mon Mar 24 03:46:00 2003
 	- fixed README
 

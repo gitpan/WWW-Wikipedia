@@ -7,7 +7,7 @@ use Carp qw( croak );
 use CGI qw( escape );
 use HTML::Parser;
 
-our $VERSION = .2;
+our $VERSION = .3;
 
 use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org/w/wiki.phtml';
 
@@ -43,22 +43,44 @@ available via the Wikipedia for that entry.
 
 =head2 new()
 
-The constructor, which takes no arguments.
+The constructor, which ordinarily takes no arguments.
 
     my $wiki = WWW::Wikipedia->new();
+
+WWW::Wikipedia uses LWP::UserAgent to to talk to the Wikipedia. If you would
+like to have more control over the user agent (control timeouts, proxies ...) 
+you can pass in a user agent for WWW::Wikipedia to use.
+
+    my $ua = LWP::UserAgent->new();
+    $ua->timeout( 2 );
+
+    my $wiki = WWW::Wikipedia->new( ua => $ua );
+
 
 =cut
 
 sub new { 
-    my $class = shift;
-    my $ua = LWP::UserAgent->new();
-    $ua->agent( 'WWW::Wikipedia' );
+    my ( $class, %opts ) = @_;
+
+    ## use the user agent they passed in if appropriate
+    my $ua;
+    if ( exists( $opts{ ua } ) and ref( $opts{ ua } ) eq 'LWP::UserAgent' ) {
+	$ua = $opts{ ua };
+    } 
+    
+    ## otherwise create our own
+    else { 
+	$ua = LWP::UserAgent->new();
+	$ua->agent( 'WWW::Wikipedia' );
+    }
+
     return(  
 	bless { 
 	    ua	    => $ua,
 	    src	    => WIKIPEDIA_ENGLISH
 	}, ref($class) || $class
     );
+
 }
 
 =head2 search() 
