@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+1.1     Thu Aug 19 20:11:10 2004
+        - fixed t/15.entry.t to hopefull pass on multiple platforms no 
+          matter what OS the distribution was created on.
+
 1.0     Tue Aug 10 08:50:13 2004
         - added initial multi-lingual support
 

@@ -48,7 +48,7 @@ sub new {
     return( $self );
 }
 
-=head1 text()
+=head2 text()
 
 The brief text for the entry. This will provide the first paragraph of 
 text; basically everything up to the first heading. Ordinarily this will
@@ -63,7 +63,7 @@ sub text {
     return( shift->{text} );
 }
 
-=head1 fulltext()
+=head2 fulltext()
 
 Returns the full text for the entry, which can be extensive.
 
@@ -74,7 +74,7 @@ sub fulltext {
     return $self->{fulltext};
 }
 
-=head1 related()
+=head2 related()
 
 Returns a list of terms in the wikipedia that are mentioned in the 
 entry text.
@@ -85,7 +85,7 @@ sub related {
     return( @{ shift->{ related } } );
 }
 
-=head1 categories()
+=head2 categories()
 
 Returns a list of categories which the entry is part of. So Perl is part
 of the Programming languages category.
@@ -96,7 +96,7 @@ sub categories {
     return( @{ shift->{ categories } } );
 }
 
-=head1 headings()
+=head2 headings()
 
 Returns a list of headings used in the entry.
 
@@ -106,7 +106,7 @@ sub headings {
     return( @{ shift->{headings} } );
 }
 
-=head1 raw()
+=head2 raw()
 
 Returns the raw wikitext for the entry.
 

@@ -8,7 +8,7 @@ use WWW::Wikipedia::Entry;
 
 use base qw( LWP::UserAgent );
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 use constant WIKIPEDIA_URL => 'http://%s.wikipedia.org';
 
@@ -129,11 +129,9 @@ sub search {
 
 =over 4
 
-=item * Clean up results
+=item * Clean up results. Strip HTML.
 
-=item * Better support for other language Wikipedias
-
-=item * Handle failed searches by suggesting other entries?
+=item * Watch the development of Special:Export XML formatting, eg: http://en.wikipedia.org/wiki/Special:Export/perl
 
 =back
 
