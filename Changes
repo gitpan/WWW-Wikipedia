@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+1.5     Wed Mar 23 08:46:03 2005
+	- added language option (-l) to bin/wikipedia
+	- added pod and pod_coverage tests
+
 1.4     Mon Feb 14 12:45:13 2005
 	- added error() for error messages
 	- search() now returns undef on error and sets error()

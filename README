@@ -1,4 +1,4 @@
-WWW::Wikipedia version 0.01
+WWW::Wikipedia version 1.5
 ==========================
 
 WWW::Wikipedia provides a mechanism to retrieve entries from the Wikipedia
@@ -22,7 +22,7 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2003 Ed Summers <ehs@pobox.com>
+Copyright (C) 2005 Ed Summers <ehs@pobox.com>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
