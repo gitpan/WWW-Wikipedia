@@ -8,7 +8,7 @@ use WWW::Wikipedia::Entry;
 
 use base qw( LWP::UserAgent );
 
-our $VERSION = '1.2';
+our $VERSION = '1.3';
 
 use constant WIKIPEDIA_URL => 'http://%s.wikipedia.org';
 
@@ -147,9 +147,9 @@ sub search {
 
 =over 4
 
-=item * Ed Summers, E<lt>esummers@flr.follett.comE<gt>
+=item * Ed Summers, E<lt>ehs@pobox.comE<gt>
 
-=item * Brian Cassidy, E<lt>brian@alternation.netE<gt>
+=item * Brian Cassidy, E<lt>bricas@cpan.orgE<gt>
 
 =back
 

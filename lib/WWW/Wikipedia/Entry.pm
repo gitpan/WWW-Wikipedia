@@ -3,6 +3,7 @@ package WWW::Wikipedia::Entry;
 use strict;
 use warnings;
 use Text::Autoformat;
+use WWW::Wikipedia;
 
 =head1 NAME
 
@@ -13,6 +14,9 @@ WWW::Wikipedia::Entry - A class for representing a Wikipedia Entry
     my $wiki = WWW::Wikipedia->new();
     my $entry = $wiki->search( 'Perl' );
     print $entry->text();
+
+    my $entry_es = $entry->language( 'es' );
+    print $entry_s->text();
 
 =head1 DESCRIPTION
 
@@ -42,6 +46,8 @@ sub new {
         related     => [],
         categories  => [],
         headings    => [],
+	languages   => {},
+	currentlang => ''
         }, ref($class) || $class;
     $self->_parse();
     $self->{fulltext} = _pretty( $self->{fulltext} );
@@ -119,11 +125,53 @@ sub raw {
 }
 
 
+=head2 language()
+
+With no parameters, it will return the current language of the entry. By
+specifying a two-letter language code, it will return the same entry in that
+language, if available.
+
+=cut
+
+sub language {
+	my $self = shift;
+	my $lang = shift;
+
+	return $self->{ currentlang } unless defined $lang;
+	return undef unless exists $self->{ languages }->{ $lang };
+
+	my $wiki  = WWW::Wikipedia->new( language => $lang );
+	return $wiki->search( $self->{ languages }->{ $lang } );
+}
+
+=head2 languages()
+
+Returns an array of two letter language codes denoting the languages in which 
+this entry is available.
+
+=cut
+
+sub languages {
+	my $self = shift;
+
+	return keys %{ $self->{ languages } };
+}
+
+
 ## messy internal routine for barebones parsing of wikitext
 
 sub _parse {
     my $self = shift;
-    my $raw = $self->{ raw };
+    my $raw  = $self->{ raw };
+    my $src  = $self->{ src };
+
+    # Add current language
+    my( $lang ) = ( $src =~ /http:\/\/(..)/ );
+    my $title   = ( split( /\//, $src ) )[ -1 ];
+
+    $self->{ currentlang } = $lang;
+    $self->{ languages }->{ $lang } = $title;
+
     for ( $self->{cursor}=0; $self->{cursor}<length($raw); 
         $self->{cursor}++ ) {
 
@@ -138,6 +186,10 @@ sub _parse {
                 if ( lc( $type ) eq 'category' ) {
                     push( @{ $self->{categories} }, $text );
                 }
+                # language codes
+		if ( length( $type ) == 2 and lc( $type ) eq $type ) {
+		    $self->{ languages }->{ $type } = $text;
+		}
             } elsif ( $directive =~ /\|/ ) {
                 my ( $lookup, $name ) = split /\|/, $directive;
                 $self->{fulltext} .= $name;
@@ -199,7 +251,9 @@ sub _pretty {
 
 =over 4
 
-=item * Ed Summers <ehs@pobox.com>
+
+=item * Ed Summers E<lt>ehs@pobox.comE<gt>
+=item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
 
 =back
 
