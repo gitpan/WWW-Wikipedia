@@ -7,7 +7,7 @@ use Carp qw( croak );
 use CGI qw( escape );
 use HTML::Parser;
 
-our $VERSION = .4;
+our $VERSION = .5;
 
 use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org/w/wiki.phtml';
 

@@ -34,6 +34,8 @@ pod2usage( { verbose => 1 } ) if ! defined( $term );
 my $wiki = WWW::Wikipedia->new;
 my $entry = $wiki->search( $term );
 
+## use a pager if we can
+eval( 'use IO::Page' );
 if ( $entry ) { print wrap( '', '', $entry->text ); }
 else { print qq("$term" not found in wikipedia\n) }
 
