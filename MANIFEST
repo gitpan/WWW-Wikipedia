@@ -6,3 +6,5 @@ lib/WWW/Wikipedia.pm
 t/10.load.t
 t/20.search.t
 t/30.ua.t
+bin/wikipedia
+META.yml

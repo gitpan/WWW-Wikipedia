@@ -7,7 +7,7 @@ use Carp qw( croak );
 use CGI qw( escape );
 use HTML::Parser;
 
-our $VERSION = .3;
+our $VERSION = .4;
 
 use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org/w/wiki.phtml';
 
@@ -259,7 +259,7 @@ sub _start {
     my ( $self, $tagname, $attr, $attrseq, $text ) = @_;
     if ( $tagname eq 'div' ) { 
 	$self->{ WIKI_DIVCOUNT }++;
-	if ( $attr->{ id } eq 'article' ) { 
+	if ( exists($attr->{ id }) and $attr->{ id } eq 'article' ) { 
 	    $self->{ WIKI_FOUND_ARTICLE } = $self->{ WIKI_DIVCOUNT };
 	}
     } elsif ( $tagname eq 'a' and $self->{ WIKI_FOUND_ARTICLE } ) {

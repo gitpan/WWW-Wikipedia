@@ -1,5 +1,9 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+0.4     Fri Feb 13 10:03:23 2004
+        - wikipedia cmd line tool courtesy of Slaven Rezic.
+        - fixed warnings emanating from module
+
 0.3	Tue Apr 01 08:57:00 2003
 	- added ability to specify useragent in constructor 
 	  thanks Lin Yung-Chung.

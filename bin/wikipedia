@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+=head1 NAME 
+
+wikipedia - lookup an entry in the wikipedia
+
+=head1 SYNOPSIS
+
+    % wikipedia perl
+
+=head1 DESCRIPTION
+
+wikipedia is a command line tool for looking up a topic in the wikipedia
+and printing it to STDOUT. Useful if you spend a lot of time in a shell
+and don't want to fire up a web browser to see what something is.
+
+=head1 AUTHORS
+
+=over 4
+
+=item * Slaven Rezic <slaven@rezic.de>
+
+=back
+
+=cut
+
+use strict;
+use WWW::Wikipedia;
+use Text::Wrap;
+use Pod::Usage;
+
+my $term = shift;
+pod2usage( { verbose => 1 } ) if ! defined( $term );
+my $wiki = WWW::Wikipedia->new;
+my $entry = $wiki->search( $term );
+
+if ( $entry ) { print wrap( '', '', $entry->text ); }
+else { print qq("$term" not found in wikipedia\n) }
+
