@@ -16,7 +16,7 @@ WWW::Wikipedia::Entry - A class for representing a Wikipedia Entry
     print $entry->text();
 
     my $entry_es = $entry->language( 'es' );
-    print $entry_s->text();
+    print $entry_es->text();
 
 =head1 DESCRIPTION
 
@@ -251,8 +251,8 @@ sub _pretty {
 
 =over 4
 
-
 =item * Ed Summers E<lt>ehs@pobox.comE<gt>
+
 =item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
 
 =back

@@ -8,7 +8,7 @@ use WWW::Wikipedia::Entry;
 
 use base qw( LWP::UserAgent );
 
-our $VERSION = '1.3';
+our $VERSION = '1.4';
 
 use constant WIKIPEDIA_URL => 'http://%s.wikipedia.org';
 
@@ -105,11 +105,15 @@ you can query further. See WWW::Wikipedia::Entry docs for more info.
     $entry = $wiki->search( 'Perl' );
     print $entry->text();
 
+If there's a problem connecting to Wikipedia, C<undef> will be returned and the
+error message will be stored in C<error()>.
 
 =cut 
 
 sub search {
     my ($self,$string) = @_;
+
+    $self->error( undef );
 
     croak( "search() requires you pass in a string" ) if ! defined( $string );
     $string = escape( $string );
@@ -120,9 +124,27 @@ sub search {
 	my $entry = WWW::Wikipedia::Entry->new( $response->content(), $src );
 	return( $entry );
     } else {
-	croak( "uhoh, WWW::Wikipedia unable to contact ".$src );
+	$self->error( "uhoh, WWW::Wikipedia unable to contact " . $src );
+	return undef;
     }
 
+}
+
+=head2 error()
+
+This is a generic error accessor/mutator. You can retrieve any searching error
+messages here.
+
+=cut
+
+sub error {
+    my $self = shift;
+
+    if( @_ ) {
+        $self->{ _ERROR } = shift;
+    }
+
+    return $self->{ _ERROR };
 }
 
 =head1 TODO
@@ -143,7 +165,7 @@ sub search {
 
 =back
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 =over 4
 
