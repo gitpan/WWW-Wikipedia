@@ -134,7 +134,7 @@ sub _parse {
             $self->{cursor} += length($&)-1;
             if ( $directive =~ /\:/ ) {
                 my ( $type, $text ) = split /:/, $directive;
-                if ( $type eq 'Category' ) {
+                if ( lc( $type ) eq 'category' ) {
                     push( @{ $self->{categories} }, $text );
                 }
             } elsif ( $directive =~ /\|/ ) {

@@ -8,9 +8,9 @@ use WWW::Wikipedia::Entry;
 
 use base qw( LWP::UserAgent );
 
-our $VERSION = .9;
+our $VERSION = '1.0';
 
-use constant WIKIPEDIA_ENGLISH => 'http://www.wikipedia.org';
+use constant WIKIPEDIA_URL => 'http://%s.wikipedia.org';
 
 =head1 NAME
 
@@ -44,9 +44,14 @@ available via the Wikipedia for that entry.
 
 =head2 new()
 
-The constructor, which takes no arguments.
+The constructor. You can pass it a two letter language code, or nothing
+to let it default to 'en'.
 
+    ## Default: English
     my $wiki = WWW::Wikipedia->new();
+
+    ## use the French wiki instead
+    my $wiki = WWW::Wikipedia->new( language => 'fr' );
 
 WWW::Wikipedia is a subclass of LWP::UserAgent. If you would
 like to have more control over the user agent (control timeouts, proxies ...) 
@@ -61,11 +66,35 @@ you have full access.
 sub new { 
     my ( $class, %opts ) = @_;
 
-    my $self =  LWP::UserAgent->new();
-    $self->agent( 'WWW::Wikipedia' );
-    $self->{ src } = WIKIPEDIA_ENGLISH;
+    my $language = $opts{ language } || 'en';
+    delete $opts{ language };
 
-    return bless $self, ref($class) || $class
+    my $self = LWP::UserAgent->new( %opts );
+    $self->agent( 'WWW::Wikipedia' );
+    bless $self, ref($class) || $class;
+    $self->language( $language );
+
+    return $self;
+}
+
+=head2 language()
+
+This allows you to get and set the language you want to use. Two letter
+language codes should be used. The default is 'en'.
+
+    my $wiki = WWW::Wikipedia->new( language => 'es' );
+    
+    # Later on...
+    $wiki->language( 'fr' );
+
+=cut
+
+sub language {
+    my( $self, $language) = @_;
+
+    $self->{ src } = sprintf( WIKIPEDIA_URL, $language ) if $language;
+    $self->{ src } =~ /http:\/\/(..)/;
+    return $1;
 }
 
 =head2 search() 
@@ -102,7 +131,7 @@ sub search {
 
 =item * Clean up results
 
-=item * Support for other language Wikipedias
+=item * Better support for other language Wikipedias
 
 =item * Handle failed searches by suggesting other entries?
 
@@ -118,7 +147,13 @@ sub search {
 
 =head1 AUTHOR
 
-Ed Summers, E<lt>esummers@flr.follett.comE<gt>
+=over 4
+
+=item * Ed Summers, E<lt>esummers@flr.follett.comE<gt>
+
+=item * Brian Cassidy, E<lt>brian@alternation.netE<gt>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -3,7 +3,10 @@ use warnings;
 use Test::More qw( no_plan );
 
 use_ok( 'WWW::Wikipedia::Entry' );
-my $wikitext = getWikiText();
+
+## test english text
+
+my $wikitext = getWikiText( 'perl.raw' );
 
 my $entry = WWW::Wikipedia::Entry->new( $wikitext, 'nowhere' );
 isa_ok( $entry, 'WWW::Wikipedia::Entry' );
@@ -17,9 +20,25 @@ is( $categories[0], "Programming languages", 'categories()' );
 
 is( $entry->related(), 91, 'related()' );
 
+## test spanish text
+
+$wikitext = getWikiText( 'perl.es.raw' );
+$entry    = WWW::Wikipedia::Entry->new( $wikitext, 'nowhere' );
+isa_ok( $entry, 'WWW::Wikipedia::Entry' );
+
+is( $entry->text(), '', 'text()' ); 
+
+is( $entry->headings(), 0, 'headings()' );
+
+@categories = $entry->categories();
+is( $categories[0], "Lenguajes interpretados", 'categories()' );
+
+is( $entry->related(), 36, 'related()' );
+
 ## fetches some wikitext from disk
 sub getWikiText {
-    open( TEXT, 't/perl.raw' );
+    my $file = shift;
+    open( TEXT, "t/$file" );
     my $text = join( "\n", <TEXT> );
     close( TEXT );
     return( $text );

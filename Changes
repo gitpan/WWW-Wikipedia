@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW::Wikipedia.
 
+1.0     Tue Aug 10 08:50:13 2004
+        - added initial multi-lingual support
+
 0.9     Wed Aug 04 23:19:12 2004
         - new WWW::Wikipedia::Entry, backwards incompatible changes to
           interface.
