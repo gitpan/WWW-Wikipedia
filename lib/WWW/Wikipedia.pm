@@ -8,7 +8,7 @@ use WWW::Wikipedia::Entry;
 
 use base qw( LWP::UserAgent );
 
-our $VERSION = '1.92';
+our $VERSION = '1.93';
 
 use constant WIKIPEDIA_URL =>
     'http://%s.wikipedia.org/w/index.php?title=%s&action=raw';
@@ -43,6 +43,16 @@ encyclopedia. This module allows you to search for a topic and return the
 resulting entry. It also gives you access to related topics which are also 
 available via the Wikipedia for that entry.
 
+
+=head1 INSTALLATION
+
+To install this module type the following:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
 =head1 METHODS
 
 =head2 new()
@@ -64,19 +74,25 @@ you have full access.
     my $wiki = WWW::Wikipedia->new();
     $wiki->timeout( 2 );
 
+
+You can turn off the following of wikipedia redirect directives by passing
+a false value to C<follow_redirects>.
+
 =cut
 
-sub new { 
+sub new {
     my ( $class, %opts ) = @_;
 
-    my $language = $opts{ language } || 'en';
-    delete $opts{ language };
+    my $language = delete $opts{ language } || 'en';
+    my $follow = delete $opts{ follow_redirects };
+    $follow = 1 if !defined $follow;
 
     my $self = LWP::UserAgent->new( %opts );
     $self->agent( 'WWW::Wikipedia' );
-    bless $self, ref($class) || $class;
+    bless $self, ref( $class ) || $class;
 
     $self->language( $language );
+    $self->follow_redirects( $follow );
     $self->parse_head( 0 );
     return $self;
 }
@@ -94,9 +110,22 @@ language codes should be used. The default is 'en'.
 =cut
 
 sub language {
-    my( $self, $language) = @_;
+    my ( $self, $language ) = @_;
     $self->{ language } = $language if $language;
     return $self->{ language };
+}
+
+=head2 follow_redirects()
+
+By default, wikipeda redirect directives are followed. Set this to false to
+turn that off.
+
+=cut
+
+sub follow_redirects {
+    my ( $self, $value ) = @_;
+    $self->{ follow_redirects } = $value if defined $value;
+    return $self->{ follow_redirects };
 }
 
 =head2 search() 
@@ -113,25 +142,28 @@ error message will be stored in C<error()>.
 =cut 
 
 sub search {
-    my ($self,$string) = @_;
+    my ( $self, $string ) = @_;
 
     $self->error( undef );
 
-    croak( "search() requires you pass in a string" ) if ! defined( $string );
+    croak( "search() requires you pass in a string" ) if !defined( $string );
     $string = escape( $string );
     my $src = sprintf( WIKIPEDIA_URL, $self->language(), $string );
 
-    my $response = $self->get($src);
+    my $response = $self->get( $src );
     if ( $response->is_success() ) {
-	my $entry = WWW::Wikipedia::Entry->new( $response->content(), $src );
+        my $entry = WWW::Wikipedia::Entry->new( $response->content(), $src );
 
         # look for a wikipedia style redirect and process if necessary
-        return $self->search($1) if $entry->text() =~ /^#REDIRECT (.*)/i;
+        return $self->search( $1 )
+            if $self->follow_redirects
+                && $entry->text() =~ /^#REDIRECT (.*)/i;
 
-	return( $entry );
-    } else {
-	$self->error( "uhoh, WWW::Wikipedia unable to contact " . $src );
-	return undef;
+        return ( $entry );
+    }
+    else {
+        $self->error( "uhoh, WWW::Wikipedia unable to contact " . $src );
+        return undef;
     }
 
 }
@@ -143,13 +175,14 @@ This method fetches a random wikipedia page.
 =cut
 
 sub random {
-    my( $self )  = @_;
-    my $src      = sprintf( WIKIPEDIA_RAND_URL, $self->language() );
+    my ( $self ) = @_;
+    my $src = sprintf( WIKIPEDIA_RAND_URL, $self->language() );
     my $response = $self->get( $src );
 
-    if( $response->is_success() ) {
+    if ( $response->is_success() ) {
+
         # get the raw version of the current url
-        $src = $response->request->uri . '?action=raw';
+        $src      = $response->request->uri . '?action=raw';
         $response = $self->get( $src );
         return WWW::Wikipedia::Entry->new( $response->content(), $src );
     }
@@ -168,7 +201,7 @@ messages here.
 sub error {
     my $self = shift;
 
-    if( @_ ) {
+    if ( @_ ) {
         $self->{ _ERROR } = shift;
     }
 
@@ -195,17 +228,13 @@ sub error {
 
 =head1 AUTHORS
 
-=over 4
+Ed Summers E<lt>ehs@pobox.comE<gt>
 
-=item * Ed Summers, E<lt>ehs@pobox.comE<gt>
-
-=item * Brian Cassidy, E<lt>bricas@cpan.orgE<gt>
-
-=back
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2005 by Ed Summers
+Copyright 2007 by Ed Summers
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

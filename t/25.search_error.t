@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More tests => 3;
 
 package WWW::Wikipedia;
@@ -5,7 +7,7 @@ package WWW::Wikipedia;
 use HTTP::Response;
 
 sub get {
-	return HTTP::Response->new( 500 );
+    return HTTP::Response->new( 500 );
 }
 
 package main;

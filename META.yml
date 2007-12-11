@@ -1,16 +1,22 @@
---- #YAML:1.0
-name:                WWW-Wikipedia
-version:             1.92
-abstract:            Automated interface to the Wikipedia 
-license:             perl
-generated_by:        ExtUtils::MakeMaker version 6.31
-distribution_type:   module
-requires:     
-    CGI:                           0
-    LWP::UserAgent:                0
-    Text::Autoformat:              0
-meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
-author:
-    - Ed Summers <ehs@pobox.com>
+--- 
+abstract: "Automated interface to the Wikipedia "
+author: 
+  - Ed Summers <ehs@pobox.com>
+build_requires: 
+  Test::More: 0
+distribution_type: module
+generated_by: Module::Install version 0.68
+license: perl
+meta-spec: 
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
+name: WWW-Wikipedia
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  CGI: 0
+  LWP::UserAgent: 0
+  Text::Autoformat: 0
+version: 1.93
