@@ -19,4 +19,4 @@ requires:
   CGI: 0
   LWP::UserAgent: 0
   Text::Autoformat: 0
-version: 1.93
+version: 1.94
