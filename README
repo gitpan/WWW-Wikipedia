@@ -58,8 +58,8 @@ METHODS
     language codes should be used. The default is 'en'.
 
         my $wiki = WWW::Wikipedia->new( language => 'es' );
-    
-        # Later on...
+        
+    # Later on...
         $wiki->language( 'fr' );
 
   follow_redirects()
@@ -85,12 +85,13 @@ METHODS
     error messages here.
 
 TODO
-    * Clean up results. Strip HTML.
-    * Watch the development of Special:Export XML formatting, eg:
-    http://en.wikipedia.org/wiki/Special:Export/perl
+    *   Clean up results. Strip HTML.
+
+    *   Watch the development of Special:Export XML formatting, eg:
+        http://en.wikipedia.org/wiki/Special:Export/perl
 
 SEE ALSO
-    * LWP::UserAgent
+    *   LWP::UserAgent
 
 AUTHORS
     Ed Summers <ehs@pobox.com>
@@ -98,7 +99,7 @@ AUTHORS
     Brian Cassidy <bricas@cpan.org>
 
 COPYRIGHT AND LICENSE
-    Copyright 2007 by Ed Summers
+    Copyright 2003-2009 by Ed Summers
 
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
