@@ -26,4 +26,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/edsu/www-wikipedia
-version: 1.99
+version: 2.00
